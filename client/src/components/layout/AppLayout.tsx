@@ -9,13 +9,10 @@ interface AppLayoutProps {
 
 export default function AppLayout({ user, onLogout }: AppLayoutProps) {
   if (!user) return <Navigate to="/login" replace />;
-
   return (
     <div className="min-h-screen bg-gray-950">
       <Sidebar fullName={user.fullName} onLogout={onLogout} />
-      <main className="ml-64 p-8">
-        <Outlet />
-      </main>
+      <main className="ml-64 p-8"><Outlet /></main>
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { getUserByUsername, encodeToken, getUser } from "../data/store";
+import { getUserByUsername, encodeToken, getUser, getUserAccounts } from "../data/store";
 import { authMiddleware, AuthenticatedRequest } from "../middleware/auth";
 
 const router = Router();
@@ -18,9 +18,9 @@ router.post("/login", (req: Request, res: Response) => {
     return;
   }
 
-  // Mock auth — accept any password for demo user
   if (username === "demo" && password === "demo123") {
     const token = encodeToken(user.id);
+    const accs = getUserAccounts(user.id);
 
     res.json({
       token,
@@ -28,7 +28,7 @@ router.post("/login", (req: Request, res: Response) => {
         id: user.id,
         username: user.username,
         fullName: user.fullName,
-        accountNumber: user.accountNumber,
+        accounts: accs,
       },
     });
     return;
@@ -46,12 +46,12 @@ router.get(
       res.status(404).json({ error: "User not found" });
       return;
     }
+    const accs = getUserAccounts(user.id);
     res.json({
       id: user.id,
       username: user.username,
       fullName: user.fullName,
-      balance: user.balance,
-      accountNumber: user.accountNumber,
+      accounts: accs,
     });
   }
 );

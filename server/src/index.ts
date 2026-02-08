@@ -18,7 +18,7 @@ app.use("/api/security", securityRouter);
 
 // Health check
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", service: "SecureBank API" });
+  res.json({ status: "ok", service: "Sentra Bank API" });
 });
 
 // Seed demo data
@@ -27,7 +27,7 @@ seedTransactions();
 // Only listen when running standalone (not in Vercel serverless)
 if (process.env.VERCEL !== "1") {
   app.listen(PORT, () => {
-    console.log(`SecureBank API running on port ${PORT}`);
+    console.log(`Sentra Bank API running on port ${PORT}`);
   });
 }
 
