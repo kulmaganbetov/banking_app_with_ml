@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { getUserIdByToken, getUser } from "../data/store";
+import { decodeToken, getUser } from "../data/store";
 
 export interface AuthenticatedRequest extends Request {
   userId?: string;
@@ -18,7 +18,7 @@ export function authMiddleware(
   }
 
   const token = authHeader.slice(7);
-  const userId = getUserIdByToken(token);
+  const userId = decodeToken(token);
 
   if (!userId) {
     res.status(401).json({ error: "Invalid or expired token" });
