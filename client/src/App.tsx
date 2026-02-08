@@ -8,7 +8,7 @@ import Transactions from "./components/pages/Transactions";
 import SecurityCenter from "./components/pages/SecurityCenter";
 
 export default function App() {
-  const { user, loading, error, login, logout } = useAuth();
+  const { user, loading, error, login, logout, refreshUser } = useAuth();
 
   if (loading) {
     return (
@@ -24,8 +24,8 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login onLogin={login} error={error} />} />
         <Route element={<AppLayout user={user} onLogout={logout} />}>
-          <Route path="/dashboard" element={<Dashboard user={user} />} />
-          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/dashboard" element={<Dashboard user={user} onRefresh={refreshUser} />} />
+          <Route path="/transactions" element={<Transactions user={user} onRefresh={refreshUser} />} />
           <Route path="/security" element={<SecurityCenter />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

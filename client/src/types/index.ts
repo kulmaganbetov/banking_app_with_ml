@@ -1,15 +1,41 @@
+export type AccountType = "checking" | "savings";
+
+export interface Account {
+  id: string;
+  userId: string;
+  type: AccountType;
+  label: string;
+  balance: number;
+  accountNumber: string;
+  dailyLimit: number;
+  dailySpent: number;
+  accountLimit: number;
+}
+
 export interface User {
   id: string;
   username: string;
   fullName: string;
-  balance?: number;
-  accountNumber: string;
+  accounts: Account[];
+}
+
+export type TransferType = "internal" | "external";
+export type BlockCategory = "ai-behavioral" | "rule-based";
+
+export interface BlockReason {
+  category: BlockCategory;
+  code: string;
+  label: string;
+  description: string;
 }
 
 export interface Transaction {
   id: string;
   userId: string;
+  fromAccountId: string;
+  toAccountId?: string;
   recipient: string;
+  transferType: TransferType;
   amount: number;
   currency: string;
   status: "COMPLETED" | "BLOCKED";
@@ -20,7 +46,7 @@ export interface Transaction {
 
 export interface MLDecision {
   riskScore: number;
-  label: "benign" | "ransomware-like";
+  label: "benign" | "suspicious";
   confidence: number;
   threatType: string;
   actionTaken: string;
@@ -29,7 +55,9 @@ export interface MLDecision {
     frequencyRisk: number;
     newRecipientRisk: number;
     automatedBehaviorRisk: number;
+    repetitivePatternRisk: number;
   };
+  blockReasons: BlockReason[];
 }
 
 export interface SecurityLog {
@@ -42,6 +70,7 @@ export interface SecurityLog {
   label: string;
   actionTaken: string;
   details: string;
+  blockReasons: BlockReason[];
 }
 
 export interface SecurityStatus {
@@ -51,6 +80,7 @@ export interface SecurityStatus {
   safeTransactions: number;
   recentThreats: number;
   lastScanTime: string;
+  blocksByCategory: { ai: number; rule: number };
 }
 
 export interface TransactionResult {

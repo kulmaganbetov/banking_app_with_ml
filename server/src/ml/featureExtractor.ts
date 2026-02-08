@@ -1,28 +1,28 @@
 import { TransactionFeatures } from "../types";
-import { getTransactionCountInWindow, getUniqueRecipients } from "../data/store";
+import {
+  getTransactionCountInWindow,
+  getUniqueRecipients,
+  getRecentRecipients,
+} from "../data/store";
 
-interface ExtractionInput {
+export interface ExtractionInput {
   userId: string;
   recipient: string;
   amount: number;
   automated?: boolean;
 }
 
-const HIGH_AMOUNT_THRESHOLD = 500_000; // KZT
-const FREQUENCY_WINDOW_MS = 5 * 60 * 1000; // 5 minutes
+const HIGH_AMOUNT_THRESHOLD = 500_000;
+const FREQUENCY_WINDOW_MS = 5 * 60 * 1000;
 const HIGH_FREQUENCY_COUNT = 3;
 
 export function extractFeatures(input: ExtractionInput): TransactionFeatures {
-  const amountRisk = computeAmountRisk(input.amount);
-  const frequencyRisk = computeFrequencyRisk(input.userId);
-  const newRecipientRisk = computeNewRecipientRisk(input.userId, input.recipient);
-  const automatedBehaviorRisk = input.automated ? 0.9 : 0.0;
-
   return {
-    amountRisk,
-    frequencyRisk,
-    newRecipientRisk,
-    automatedBehaviorRisk,
+    amountRisk: computeAmountRisk(input.amount),
+    frequencyRisk: computeFrequencyRisk(input.userId),
+    newRecipientRisk: computeNewRecipientRisk(input.userId, input.recipient),
+    automatedBehaviorRisk: input.automated ? 0.9 : 0.0,
+    repetitivePatternRisk: computeRepetitivePatternRisk(input.userId, input.recipient),
   };
 }
 
@@ -44,4 +44,12 @@ function computeFrequencyRisk(userId: string): number {
 function computeNewRecipientRisk(userId: string, recipient: string): number {
   const knownRecipients = getUniqueRecipients(userId);
   return knownRecipients.has(recipient) ? 0.05 : 0.5;
+}
+
+function computeRepetitivePatternRisk(userId: string, recipient: string): number {
+  const recent = getRecentRecipients(userId, 5);
+  const sameCount = recent.filter((r) => r === recipient).length;
+  if (sameCount >= 3) return 0.85;
+  if (sameCount >= 2) return 0.5;
+  return 0.05;
 }

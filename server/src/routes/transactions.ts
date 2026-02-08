@@ -1,16 +1,17 @@
 import { Router, Response } from "express";
 import { authMiddleware, AuthenticatedRequest } from "../middleware/auth";
 import { createTransaction, getUserTransactions } from "../services/transactionService";
+import type { TransferType } from "../types";
 
 const router = Router();
 
 router.use(authMiddleware);
 
 router.post("/", (req: AuthenticatedRequest, res: Response) => {
-  const { recipient, amount, description, automated } = req.body;
+  const { fromAccountId, toAccountId, transferType, recipient, amount, description, automated, deviceId } = req.body;
 
-  if (!recipient || !amount) {
-    res.status(400).json({ error: "Recipient and amount are required" });
+  if (!fromAccountId || !recipient || !amount || !transferType) {
+    res.status(400).json({ error: "fromAccountId, recipient, amount, and transferType are required" });
     return;
   }
 
@@ -20,10 +21,14 @@ router.post("/", (req: AuthenticatedRequest, res: Response) => {
   }
 
   const result = createTransaction(req.userId!, {
+    fromAccountId,
+    toAccountId,
+    transferType: transferType as TransferType,
     recipient,
     amount,
     description,
     automated,
+    deviceId,
   });
 
   const statusCode = result.blocked ? 403 : 201;

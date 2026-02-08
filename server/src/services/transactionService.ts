@@ -4,11 +4,11 @@ import { analyzeTransaction } from "../ml/decisionEngine";
 import {
   addTransaction,
   getTransactions,
-  updateUserBalance,
+  updateAccountBalance,
+  addDailySpent,
   addSecurityLog,
-  getUser,
+  getAccount,
   getSecurityLogs,
-  getAllTransactions,
 } from "../data/store";
 
 interface TransactionResult {
@@ -21,62 +21,69 @@ export function createTransaction(
   userId: string,
   request: CreateTransactionRequest
 ): TransactionResult {
+  const account = getAccount(request.fromAccountId);
+  if (!account) throw new Error("Source account not found");
+
+  const timestamp = new Date().toISOString();
+
   const { decision, shouldBlock } = analyzeTransaction({
     userId,
     recipient: request.recipient,
     amount: request.amount,
     automated: request.automated,
+    account,
+    timestamp,
+    deviceId: request.deviceId,
   });
 
   const transaction: Transaction = {
     id: uuidv4(),
     userId,
+    fromAccountId: request.fromAccountId,
+    toAccountId: request.toAccountId,
     recipient: request.recipient,
+    transferType: request.transferType,
     amount: request.amount,
     currency: "KZT",
     status: shouldBlock ? "BLOCKED" : "COMPLETED",
-    timestamp: new Date().toISOString(),
+    timestamp,
     description: request.description,
     mlDecision: decision,
   };
 
   addTransaction(transaction);
 
-  if (shouldBlock) {
-    const log: SecurityLog = {
-      id: uuidv4(),
-      timestamp: transaction.timestamp,
-      transactionId: transaction.id,
-      threatType: decision.threatType,
-      riskScore: decision.riskScore,
-      confidence: decision.confidence,
-      label: decision.label,
-      actionTaken: "BLOCKED",
-      details: `Transaction of ${request.amount} KZT to ${request.recipient} blocked. Risk: ${decision.riskScore}, Threat: ${decision.threatType}`,
-    };
-    addSecurityLog(log);
-  } else {
-    // Log benign decisions too for audit
-    const log: SecurityLog = {
-      id: uuidv4(),
-      timestamp: transaction.timestamp,
-      transactionId: transaction.id,
-      threatType: decision.threatType,
-      riskScore: decision.riskScore,
-      confidence: decision.confidence,
-      label: decision.label,
-      actionTaken: "ALLOWED",
-      details: `Transaction of ${request.amount} KZT to ${request.recipient} allowed. Risk: ${decision.riskScore}`,
-    };
-    addSecurityLog(log);
-    updateUserBalance(userId, -request.amount);
+  const log: SecurityLog = {
+    id: uuidv4(),
+    timestamp,
+    transactionId: transaction.id,
+    threatType: decision.threatType,
+    riskScore: decision.riskScore,
+    confidence: decision.confidence,
+    label: decision.label,
+    actionTaken: shouldBlock ? "BLOCKED" : "ALLOWED",
+    details: `${request.transferType === "internal" ? "Internal" : "External"} transfer of ${request.amount} KZT to ${request.recipient} ${shouldBlock ? "blocked" : "allowed"}. Risk: ${decision.riskScore}`,
+    blockReasons: decision.blockReasons,
+  };
+  addSecurityLog(log);
+
+  if (!shouldBlock) {
+    updateAccountBalance(request.fromAccountId, -request.amount);
+    addDailySpent(request.fromAccountId, request.amount);
+    if (request.transferType === "internal" && request.toAccountId) {
+      updateAccountBalance(request.toAccountId, request.amount);
+    }
   }
+
+  const reasonSummary = decision.blockReasons
+    .map((r) => r.label)
+    .join(", ");
 
   return {
     transaction,
     blocked: shouldBlock,
     warning: shouldBlock
-      ? `Transaction blocked by AI security. Threat: ${decision.threatType} (confidence: ${(decision.confidence * 100).toFixed(1)}%)`
+      ? `Transaction blocked. Reasons: ${reasonSummary}`
       : undefined,
   };
 }
@@ -94,7 +101,7 @@ export function getSecurityStatus(userId: string) {
   const oneHourAgo = Date.now() - 60 * 60 * 1000;
   const recentThreats = logs.filter(
     (l) =>
-      l.label === "ransomware-like" &&
+      l.label === "suspicious" &&
       new Date(l.timestamp).getTime() > oneHourAgo
   ).length;
 
@@ -103,6 +110,13 @@ export function getSecurityStatus(userId: string) {
   else if (recentThreats >= 3) overallThreatLevel = "HIGH";
   else if (recentThreats >= 1) overallThreatLevel = "MEDIUM";
 
+  const aiBlocks = logs.filter(
+    (l) => l.actionTaken === "BLOCKED" && l.blockReasons.some((r) => r.category === "ai-behavioral")
+  ).length;
+  const ruleBlocks = logs.filter(
+    (l) => l.actionTaken === "BLOCKED" && l.blockReasons.some((r) => r.category === "rule-based")
+  ).length;
+
   return {
     overallThreatLevel,
     totalTransactions: allTx.length,
@@ -110,6 +124,7 @@ export function getSecurityStatus(userId: string) {
     safeTransactions: safeCount,
     recentThreats,
     lastScanTime: new Date().toISOString(),
+    blocksByCategory: { ai: aiBlocks, rule: ruleBlocks },
   };
 }
 
