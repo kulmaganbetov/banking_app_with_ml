@@ -24,8 +24,11 @@ app.get("/api/health", (_req, res) => {
 // Seed demo data
 seedTransactions();
 
-app.listen(PORT, () => {
-  console.log(`SecureBank API running on port ${PORT}`);
-});
+// Only listen when running standalone (not in Vercel serverless)
+if (process.env.VERCEL !== "1") {
+  app.listen(PORT, () => {
+    console.log(`SecureBank API running on port ${PORT}`);
+  });
+}
 
 export default app;
