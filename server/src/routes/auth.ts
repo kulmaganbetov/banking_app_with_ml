@@ -1,6 +1,5 @@
 import { Router, Request, Response } from "express";
-import { v4 as uuidv4 } from "uuid";
-import { getUserByUsername, setToken, getUser } from "../data/store";
+import { getUserByUsername, encodeToken, getUser } from "../data/store";
 import { authMiddleware, AuthenticatedRequest } from "../middleware/auth";
 
 const router = Router();
@@ -21,8 +20,7 @@ router.post("/login", (req: Request, res: Response) => {
 
   // Mock auth — accept any password for demo user
   if (username === "demo" && password === "demo123") {
-    const token = uuidv4();
-    setToken(token, user.id);
+    const token = encodeToken(user.id);
 
     res.json({
       token,

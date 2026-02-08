@@ -3,7 +3,25 @@ import { User, Transaction, SecurityLog } from "../types";
 const users: Map<string, User> = new Map();
 const transactions: Transaction[] = [];
 const securityLogs: SecurityLog[] = [];
-const tokens: Map<string, string> = new Map(); // token -> userId
+// Token encoding/decoding — self-contained tokens for serverless compatibility
+const TOKEN_PREFIX = "sb_";
+
+export function encodeToken(userId: string): string {
+  const payload = JSON.stringify({ uid: userId, ts: Date.now() });
+  return TOKEN_PREFIX + Buffer.from(payload).toString("base64url");
+}
+
+export function decodeToken(token: string): string | null {
+  if (!token.startsWith(TOKEN_PREFIX)) return null;
+  try {
+    const payload = JSON.parse(
+      Buffer.from(token.slice(TOKEN_PREFIX.length), "base64url").toString()
+    );
+    return payload.uid || null;
+  } catch {
+    return null;
+  }
+}
 
 // Seed a default user
 users.set("user-001", {
@@ -56,14 +74,6 @@ export function getSecurityLogs(): SecurityLog[] {
   return [...securityLogs].sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
   );
-}
-
-export function setToken(token: string, userId: string): void {
-  tokens.set(token, userId);
-}
-
-export function getUserIdByToken(token: string): string | undefined {
-  return tokens.get(token);
 }
 
 export function getTransactionCountInWindow(userId: string, windowMs: number): number {
