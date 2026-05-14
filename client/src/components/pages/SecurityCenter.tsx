@@ -53,61 +53,61 @@ export default function SecurityCenter() {
   const blockedLogs = logs.filter((l) => l.actionTaken === "BLOCKED");
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Security Center</h1>
-        <p className="text-sm text-gray-400 mt-1">AI-powered threat detection and rule-based banking protection</p>
+        <h1 className="text-xl sm:text-2xl font-bold">Security Center</h1>
+        <p className="text-xs sm:text-sm text-gray-400 mt-1">AI-powered threat detection and rule-based banking protection</p>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <motion.div {...card(0)} className={`glass p-6 bg-gradient-to-br ${status ? threatLevelBg[status.overallThreatLevel] : ""}`}>
-          <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">AI Threat Level</p>
-          <p className={`text-4xl font-extrabold ${status ? threatLevelColors[status.overallThreatLevel] : "text-gray-500"}`}>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-6">
+        <motion.div {...card(0)} className={`glass p-4 sm:p-6 col-span-2 sm:col-span-1 bg-gradient-to-br ${status ? threatLevelBg[status.overallThreatLevel] : ""}`}>
+          <p className="text-xs text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2">AI Threat Level</p>
+          <p className={`text-3xl sm:text-4xl font-extrabold ${status ? threatLevelColors[status.overallThreatLevel] : "text-gray-500"}`}>
             {status?.overallThreatLevel ?? "—"}
           </p>
-          <p className="text-xs text-gray-500 mt-2">Last scan: {status ? formatDate(status.lastScanTime) : "—"}</p>
+          <p className="text-xs text-gray-500 mt-1.5 sm:mt-2">Last scan: {status ? formatDate(status.lastScanTime) : "—"}</p>
         </motion.div>
-        <motion.div {...card(1)} className="glass p-6">
-          <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Total Analyzed</p>
-          <p className="text-3xl font-bold text-white">{status?.totalTransactions ?? "—"}</p>
-          <p className="text-xs text-gray-500 mt-2">transactions</p>
+        <motion.div {...card(1)} className="glass p-4 sm:p-6">
+          <p className="text-xs text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2">Analyzed</p>
+          <p className="text-2xl sm:text-3xl font-bold text-white">{status?.totalTransactions ?? "—"}</p>
+          <p className="text-xs text-gray-500 mt-1.5 sm:mt-2">transactions</p>
         </motion.div>
-        <motion.div {...card(2)} className="glass p-6">
-          <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">AI Blocks</p>
-          <p className="text-3xl font-bold text-danger">{status?.blocksByCategory.ai ?? "—"}</p>
-          <p className="text-xs text-gray-500 mt-2">behavioral detections</p>
+        <motion.div {...card(2)} className="glass p-4 sm:p-6">
+          <p className="text-xs text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2">AI Blocks</p>
+          <p className="text-2xl sm:text-3xl font-bold text-danger">{status?.blocksByCategory.ai ?? "—"}</p>
+          <p className="text-xs text-gray-500 mt-1.5 sm:mt-2">behavioral</p>
         </motion.div>
-        <motion.div {...card(3)} className="glass p-6">
-          <p className="text-xs text-gray-400 uppercase tracking-wider mb-2">Rule Blocks</p>
-          <p className="text-3xl font-bold text-warning">{status?.blocksByCategory.rule ?? "—"}</p>
-          <p className="text-xs text-gray-500 mt-2">policy violations</p>
+        <motion.div {...card(3)} className="glass p-4 sm:p-6">
+          <p className="text-xs text-gray-400 uppercase tracking-wider mb-1.5 sm:mb-2">Rule Blocks</p>
+          <p className="text-2xl sm:text-3xl font-bold text-warning">{status?.blocksByCategory.rule ?? "—"}</p>
+          <p className="text-xs text-gray-500 mt-1.5 sm:mt-2">policy</p>
         </motion.div>
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass p-6">
-          <h3 className="text-sm font-semibold mb-4">Transaction Safety Split</h3>
-          <div className="h-56">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass p-4 sm:p-6">
+          <h3 className="text-sm font-semibold mb-3 sm:mb-4">Transaction Safety Split</h3>
+          <div className="h-44 sm:h-56">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
-                <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={80} paddingAngle={4} dataKey="value" stroke="none">
+                <Pie data={pieData} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={4} dataKey="value" stroke="none">
                   {pieData.map((_, idx) => <Cell key={idx} fill={idx === 0 ? COLORS.safe : COLORS.blocked} />)}
                 </Pie>
                 <Tooltip contentStyle={{ background: "#1f2937", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "8px", color: "#fff", fontSize: "12px" }} />
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="flex justify-center gap-6 mt-2">
+          <div className="flex justify-center gap-4 sm:gap-6 mt-2">
             <div className="flex items-center gap-2 text-xs"><div className="w-2.5 h-2.5 rounded-full bg-accent" />Safe</div>
             <div className="flex items-center gap-2 text-xs"><div className="w-2.5 h-2.5 rounded-full bg-danger" />Blocked</div>
           </div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass p-6">
-          <h3 className="text-sm font-semibold mb-4">Blocks by Category</h3>
-          <div className="h-56">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="glass p-4 sm:p-6">
+          <h3 className="text-sm font-semibold mb-3 sm:mb-4">Blocks by Category</h3>
+          <div className="h-44 sm:h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={categoryData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
@@ -126,22 +126,21 @@ export default function SecurityCenter() {
       </div>
 
       {/* Blocked Transactions Detail */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="glass p-6">
-        <h2 className="text-lg font-semibold mb-4">Blocked Transactions — Detailed Analysis</h2>
-        <div className="space-y-4">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="glass p-4 sm:p-6">
+        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Blocked Transactions — Detailed Analysis</h2>
+        <div className="space-y-3 sm:space-y-4">
           {blockedLogs.length === 0 && <p className="text-sm text-gray-500">No threats detected.</p>}
           {blockedLogs.map((log) => (
-            <div key={log.id} className="p-4 bg-white/5 border border-white/10 rounded-xl">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
+            <div key={log.id} className="p-3 sm:p-4 bg-white/5 border border-white/10 rounded-xl">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 sm:gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
                     <span className="text-xs font-mono px-2 py-0.5 bg-danger/15 text-danger rounded">{log.threatType}</span>
                     <span className="text-xs text-gray-400">{formatDate(log.timestamp)}</span>
                   </div>
                   <p className="text-sm text-gray-300">{log.details}</p>
-                  {/* Block Reasons by Category */}
                   {log.blockReasons.length > 0 && (
-                    <div className="mt-3 space-y-1.5">
+                    <div className="mt-2.5 sm:mt-3 space-y-1.5">
                       {log.blockReasons.map((reason, i) => (
                         <div key={i} className="flex items-start gap-2">
                           <span className={`mt-0.5 shrink-0 text-xs px-1.5 py-0.5 rounded font-medium ${
@@ -151,7 +150,7 @@ export default function SecurityCenter() {
                           }`}>
                             {reason.category === "ai-behavioral" ? "AI" : "RULE"}
                           </span>
-                          <div>
+                          <div className="min-w-0">
                             <p className="text-xs font-medium text-gray-200">{reason.label}</p>
                             <p className="text-xs text-gray-500">{reason.description}</p>
                           </div>
@@ -160,7 +159,7 @@ export default function SecurityCenter() {
                     </div>
                   )}
                 </div>
-                <div className="text-right shrink-0">
+                <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:gap-0 shrink-0">
                   <p className="text-xs text-gray-400">Risk Score</p>
                   <p className="text-lg font-bold text-danger">{(log.riskScore * 100).toFixed(0)}%</p>
                   <p className="text-xs text-gray-500">Conf: {(log.confidence * 100).toFixed(0)}%</p>
@@ -172,9 +171,47 @@ export default function SecurityCenter() {
       </motion.div>
 
       {/* Full AI Decision Logs */}
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="glass p-6">
-        <h2 className="text-lg font-semibold mb-4">AI Decision Logs</h2>
-        <div className="overflow-x-auto">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }} className="glass p-4 sm:p-6">
+        <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">AI Decision Logs</h2>
+
+        {/* Mobile: card layout */}
+        <div className="block sm:hidden space-y-3">
+          {logs.map((log) => (
+            <div key={log.id} className={`p-3 rounded-xl border ${log.actionTaken === "BLOCKED" ? "bg-danger/5 border-danger/15" : "bg-white/5 border-white/10"}`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-mono text-xs text-gray-300">{log.threatType}</span>
+                <span className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                  log.actionTaken === "BLOCKED" ? "bg-danger/15 text-danger" : "bg-accent/15 text-accent"
+                }`}>{log.actionTaken}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <span className={`px-1.5 py-0.5 text-xs font-medium rounded-full ${
+                    log.label === "suspicious" ? "bg-danger/15 text-danger" : "bg-accent/15 text-accent"
+                  }`}>{log.label}</span>
+                  {log.blockReasons.filter((r) => r.category === "ai-behavioral").length > 0 && (
+                    <span className="text-xs px-1.5 py-0.5 bg-danger/15 text-danger rounded">
+                      AI:{log.blockReasons.filter((r) => r.category === "ai-behavioral").length}
+                    </span>
+                  )}
+                  {log.blockReasons.filter((r) => r.category === "rule-based").length > 0 && (
+                    <span className="text-xs px-1.5 py-0.5 bg-warning/15 text-warning rounded">
+                      Rule:{log.blockReasons.filter((r) => r.category === "rule-based").length}
+                    </span>
+                  )}
+                </div>
+                <span className={`text-xs font-mono ${
+                  log.riskScore > 0.55 ? "text-danger" : log.riskScore > 0.3 ? "text-warning" : "text-accent"
+                }`}>{(log.riskScore * 100).toFixed(0)}%</span>
+              </div>
+              <p className="text-xs text-gray-500 mt-1.5">{formatDate(log.timestamp)}</p>
+            </div>
+          ))}
+          {logs.length === 0 && <p className="text-sm text-gray-500 text-center py-4">No AI decisions logged yet</p>}
+        </div>
+
+        {/* Desktop: table layout */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-xs text-gray-400 uppercase tracking-wider border-b border-white/10">
