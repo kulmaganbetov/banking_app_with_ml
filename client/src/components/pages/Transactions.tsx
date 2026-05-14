@@ -65,19 +65,19 @@ export default function Transactions({ user, onRefresh }: TransactionsProps) {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-5 sm:space-y-8">
       <div>
-        <h1 className="text-2xl font-bold">Transactions</h1>
-        <p className="text-sm text-gray-400 mt-1">Send money and view transaction history</p>
+        <h1 className="text-xl sm:text-2xl font-bold">Transactions</h1>
+        <p className="text-xs sm:text-sm text-gray-400 mt-1">Send money and view transaction history</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-8">
         {/* Create Transaction Form */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass p-6 lg:col-span-1">
-          <h2 className="text-lg font-semibold mb-4">Send Money</h2>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass p-4 sm:p-6 lg:col-span-1">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Send Money</h2>
 
           {/* Transfer Type Toggle */}
-          <div className="flex mb-5 bg-white/5 rounded-xl p-1">
+          <div className="flex mb-4 sm:mb-5 bg-white/5 rounded-xl p-1">
             {(["external", "internal"] as TransferType[]).map((t) => (
               <button
                 key={t}
@@ -86,19 +86,18 @@ export default function Transactions({ user, onRefresh }: TransactionsProps) {
                   transferType === t ? "bg-primary text-white" : "text-gray-400 hover:text-white"
                 }`}
               >
-                {t === "external" ? "External Transfer" : "Between Accounts"}
+                {t === "external" ? "External" : "Between Accounts"}
               </button>
             ))}
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* From Account */}
+          <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
             <div>
               <label className="block text-xs font-medium text-gray-400 mb-1.5">From Account</label>
               <select
                 value={fromAccountId}
                 onChange={(e) => setFromAccountId(e.target.value)}
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary/50"
+                className="w-full px-3 sm:px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary/50"
               >
                 {accounts.map((acc) => (
                   <option key={acc.id} value={acc.id} className="bg-gray-900">
@@ -114,7 +113,7 @@ export default function Transactions({ user, onRefresh }: TransactionsProps) {
                 <select
                   value={toAccountId}
                   onChange={(e) => setToAccountId(e.target.value)}
-                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary/50"
+                  className="w-full px-3 sm:px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary/50"
                 >
                   {accounts.filter((a) => a.id !== fromAccountId).map((acc) => (
                     <option key={acc.id} value={acc.id} className="bg-gray-900">
@@ -128,23 +127,23 @@ export default function Transactions({ user, onRefresh }: TransactionsProps) {
                 <label className="block text-xs font-medium text-gray-400 mb-1.5">Recipient</label>
                 <input type="text" value={recipient} onChange={(e) => setRecipient(e.target.value)}
                   placeholder="Enter recipient name"
-                  className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all" />
+                  className="w-full px-3 sm:px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all" />
               </div>
             )}
 
             <div>
               <label className="block text-xs font-medium text-gray-400 mb-1.5">Amount (KZT)</label>
               <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" min="1"
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all" />
+                className="w-full px-3 sm:px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all" />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-400 mb-1.5">Description (optional)</label>
               <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="What's this for?"
-                className="w-full px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all" />
+                className="w-full px-3 sm:px-4 py-2.5 bg-white/5 border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/30 transition-all" />
             </div>
             <button type="submit" disabled={submitting}
               className="w-full py-2.5 text-sm font-semibold bg-primary hover:bg-primary-dark disabled:opacity-50 text-white rounded-lg transition-colors">
-              {submitting ? "Processing..." : transferType === "internal" ? "Transfer Between Accounts" : "Send Transaction"}
+              {submitting ? "Processing..." : transferType === "internal" ? "Transfer" : "Send Transaction"}
             </button>
           </form>
 
@@ -170,9 +169,49 @@ export default function Transactions({ user, onRefresh }: TransactionsProps) {
         </motion.div>
 
         {/* Transaction History */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass p-6 lg:col-span-2">
-          <h2 className="text-lg font-semibold mb-4">Transaction History</h2>
-          <div className="overflow-x-auto">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="glass p-4 sm:p-6 lg:col-span-2">
+          <h2 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Transaction History</h2>
+
+          {/* Mobile: card layout */}
+          <div className="block sm:hidden space-y-3">
+            {transactions.map((tx) => (
+              <div key={tx.id} className={`p-3 rounded-xl border ${tx.status === "BLOCKED" ? "bg-danger/5 border-danger/15" : "bg-white/5 border-white/10"}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full ${
+                      tx.transferType === "internal" ? "bg-purple-500/15 text-purple-400" : "bg-white/10 text-gray-400"
+                    }`}>
+                      {tx.transferType === "internal" ? "INT" : "EXT"}
+                    </span>
+                    <p className="text-sm font-medium truncate">{tx.recipient}</p>
+                  </div>
+                  <span className={`shrink-0 px-2 py-0.5 text-xs font-medium rounded-full ${
+                    tx.status === "BLOCKED" ? "bg-danger/15 text-danger" : "bg-accent/15 text-accent"
+                  }`}>{tx.status}</span>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p className="text-xs text-gray-500">{tx.description || "—"}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{formatDate(tx.timestamp)}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className={`text-sm font-semibold ${tx.status === "BLOCKED" ? "text-danger line-through" : "text-white"}`}>
+                      {formatKZT(tx.amount)}
+                    </p>
+                    {tx.mlDecision && (
+                      <span className={`text-xs font-mono ${
+                        tx.mlDecision.riskScore > 0.55 ? "text-danger" : tx.mlDecision.riskScore > 0.3 ? "text-warning" : "text-accent"
+                      }`}>{(tx.mlDecision.riskScore * 100).toFixed(0)}% risk</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+            {transactions.length === 0 && <p className="text-sm text-gray-500 text-center py-4">No transactions yet</p>}
+          </div>
+
+          {/* Desktop: table layout */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="text-xs text-gray-400 uppercase tracking-wider border-b border-white/10">

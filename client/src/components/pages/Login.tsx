@@ -24,10 +24,10 @@ export default function Login({ onLogin, error }: LoginProps) {
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center px-4">
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}
-        className="glass-strong w-full max-w-sm p-8">
-        <div className="text-center mb-8">
+        className="glass-strong w-full max-w-sm p-6 sm:p-8">
+        <div className="text-center mb-6 sm:mb-8">
           <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">S</div>
-          <h2 className="text-2xl font-bold">Welcome Back</h2>
+          <h2 className="text-xl sm:text-2xl font-bold">Welcome Back</h2>
           <p className="text-sm text-gray-400 mt-1">Sign in to Sentra Bank</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
